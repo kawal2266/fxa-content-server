@@ -11,6 +11,9 @@ define(function (require, exports, module) {
   'use strict';
 
   const NavigateBehavior = require('../behaviors/navigate');
+  const Url = require('../../lib/search-param-mixin');
+  const Cocktail = require('cocktail');
+
   const t = (msg) => msg;
 
   /**
@@ -25,6 +28,7 @@ define(function (require, exports, module) {
    */
   module.exports = function (defaultBehavior, options = {}) {
     const behavior = function (view, account) {
+      Cocktail.mixin(view, Url);
       return account.isSignedIn()
         .then((isSignedIn) => {
           if (isSignedIn) {
@@ -37,6 +41,13 @@ define(function (require, exports, module) {
             if (options.endpoint) {
               endpoint = options.endpoint;
             }
+
+            // TODO: Properly mixin SearchParam
+            const redirectTo = Url.getSearchParam('redirectTo');
+            if (redirectTo) {
+              endpoint = redirectTo;
+            }
+
             return new NavigateBehavior(endpoint, { success });
           }
 

@@ -19,6 +19,7 @@
 define(function (require, exports, module) {
   'use strict';
 
+  const $ = require('jquery');
   const BaseView = require('../base');
   const { preventDefaultThen } = BaseView;
   const SettingsPanelMixin = require('../mixins/settings-panel-mixin');
@@ -44,6 +45,7 @@ define(function (require, exports, module) {
       dependsOn: [SettingsPanelMixin],
 
       events: {
+        'click .cancel-verification-email': preventDefaultThen('_clickCancelVerificationEmail'),
         'click .refresh-verification-state': preventDefaultThen('_clickRefreshVerificationState'),
         'click .send-verification-email': preventDefaultThen('_clickSendVerificationEmail')
       },
@@ -62,19 +64,34 @@ define(function (require, exports, module) {
               this.displaySuccess(t('Primary email verified successfully'), {
                 closePanel: false
               });
+
+              // TODO: Find a better solution to rerendering all the subpanels
+              // besides reloading the entire page.
+              return this.navigateAway(this.window.location.href);
             }
-            return this.render();
           });
       }, EMAIL_REFRESH_SELECTOR, EMAIL_REFRESH_DELAYMS),
 
       _clickSendVerificationEmail () {
         const account = this.getSignedInAccount();
-        return account.requestVerifySession(this.relier)
+        return account.requestVerifySession({
+          // TODO: Just for testing
+          redirectTo: this.window.location.href.split('?')[0]
+        })
           .then(() => {
             this.displaySuccess(t('Verification email sent'), {
               closePanel: false
             });
+            $('.send-verification-email').addClass('hidden');
+            $('.cancel-verification-email').removeClass('hidden');
           });
+      },
+
+      _clickCancelVerificationEmail () {
+        this.closePanel();
+        this.navigate('/settings');
+        $('.send-verification-email').removeClass('hidden');
+        $('.cancel-verification-email').addClass('hidden');
       },
 
       setInitialContext (context) {

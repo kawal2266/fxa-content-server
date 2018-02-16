@@ -65,9 +65,6 @@ define(function (require, exports, module) {
     defaultBehaviors: {
       afterChangePassword: new NullBehavior(),
       afterCompletePrimaryEmail: new SettingsIfSignedInBehavior(new NavigateBehavior('primary_email_verified'), {
-        // Upon verifying primary email, we want to reopen the emails panel to let user continue adding more
-        // emails
-        endpoint: 'settings/emails',
         success: t('Primary email verified successfully')
       }),
       afterCompleteResetPassword: new NullBehavior(),
