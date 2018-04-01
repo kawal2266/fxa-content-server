@@ -726,8 +726,8 @@ Start.prototype = {
                // verification
                this._isOAuthVerificationSameBrowser()) ||
                this._isOAuthVerificationDifferentBrowser() ||
-               // any URL with oauth in it
-               /oauth/.test(this._window.location.href);
+               // any URL with 'oauth' in the path.
+               /oauth/.test(this._window.location.pathname);
   },
 
   _isAtCookiesDisabled () {
